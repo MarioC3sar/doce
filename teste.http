@@ -19,23 +19,122 @@ Content-Type: application/json
   "password": "123"
 }
 
+### Cadastrar Insumo (Protegido por JWT)
+POST http://localhost:8080/api/ingredients
+Content-Type: application/json
+Authorization: Bearer COLE_SEU_TOKEN_AQUI
+
+### Cadastrar Insumo (Protegido por JWT)
+POST http://localhost:8080/api/ingredients
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJtYXJpb0B0ZXN0ZS5jb20iLCJpYXQiOjE3ODkwNjI1MTksImV4cCI6MTc4OTE0ODkxOX0.hQAPzjkeJaaLUpIYLUykMr9QXygXTRv0owr1uGQ5eqf2Cm2yWf7Vh6sg5wNQ8bF__rzo-aMfeDQ9ivZdWjyNag
+
+{
+  "name": "Bacon em cubos",
+  "packagePrice": 15.90,
+  "packageQuantity": 500,
+  "unit": "G"
+}
+
+
+
+### 1. Cadastrar Leite Condensado (Deve gerar ID 2)
+POST http://localhost:8080/api/ingredients
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJtYXJpb0B0ZXN0ZS5jb20iLCJpYXQiOjE3ODkwNjMzOTMsImV4cCI6MTc4OTE0OTc5M30.HpyDcoxNSois9wp_rViXBGZ2FYvWg9XVqp57NrQJDIHd3cAg6BIjvzbVuN7fGfit93VnBgxbtRVYJ7EUR77zRg
+
+{
+  "name": "Leite Condensado Moça",
+  "packagePrice": 6.50,
+  "packageQuantity": 395,
+  "unit": "G"
+}
+
+### 2. Cadastrar Cacau em Pó 70% (Deve gerar ID 3)
+POST http://localhost:8080/api/ingredients
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJtYXJpb0B0ZXN0ZS5jb20iLCJpYXQiOjE3ODkwNjMzOTMsImV4cCI6MTc4OTE0OTc5M30.HpyDcoxNSois9wp_rViXBGZ2FYvWg9XVqp57NrQJDIHd3cAg6BIjvzbVuN7fGfit93VnBgxbtRVYJ7EUR77zRg
+
+{
+  "name": "Cacau em Pó 70%",
+  "packagePrice": 25.00,
+  "packageQuantity": 200,
+  "unit": "G"
+}
+
+### 3. Criar a Ficha Técnica do Brigadeiro
+POST http://localhost:8080/api/recipes
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJtYXJpb0B0ZXN0ZS5jb20iLCJpYXQiOjE3ODkwNjMzOTMsImV4cCI6MTc4OTE0OTc5M30.HpyDcoxNSois9wp_rViXBGZ2FYvWg9XVqp57NrQJDIHd3cAg6BIjvzbVuN7fGfit93VnBgxbtRVYJ7EUR77zRg
+
+
+{
+  "name": "Massa de Brigadeiro 70% Cacau",
+  "yield": 30,
+  "items": [
+    {
+      "ingredient": { "id": 2 },
+      "quantityUsed": 395
+    },
+    {
+      "ingredient": { "id": 3 },
+      "quantityUsed": 40
+    }
+  ]
+}
+
+### Listar Receitas (Fichas Técnicas)
+GET http://localhost:8080/api/recipes
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJtYXJpb0B0ZXN0ZS5jb20iLCJpYXQiOjE3ODkwNjMzOTMsImV4cCI6MTc4OTE0OTc5M30.HpyDcoxNSois9wp_rViXBGZ2FYvWg9XVqp57NrQJDIHd3cAg6BIjvzbVuN7fGfit93VnBgxbtRVYJ7EUR77zRg
 
 
 
 
+### Atualizar o preço do Leite Condensado (ID 2) de 6.50 para 7.90
+PUT http://localhost:8080/api/ingredients/2
+Content-Type: application/json
+Authorization: Bearer COLE_O_SEU_TOKEN_AQUI
+
+{
+  "name": "Leite Condensado Moça",
+  "packagePrice": 7.90,
+  "packageQuantity": 395,
+  "unit": "G"
+}
+
+### Atualizar a Receita do Brigadeiro (ID 1) - Alterando o rendimento para 40
+PUT http://localhost:8080/api/recipes/1
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJtYXJpb0B0ZXN0ZS5jb20iLCJpYXQiOjE3ODkwNjQwNDMsImV4cCI6MTc4OTE1MDQ0M30.lqbu5rO_vo8A5Kuy6KeIp4MwPO6vfXBdsjBSp0zSJlz6zrZ7x-2NMeoxTtPFAE9tqp2FER6YFS4u77BP_TTklA
+
+{
+  "name": "Massa de Brigadeiro 70% Cacau",
+  "yield": 40,
+  "items": [
+    {
+      "ingredient": { "id": 2 },
+      "quantityUsed": 395
+    },
+    {
+      "ingredient": { "id": 3 },
+      "quantityUsed": 40
+    }
+  ]
+}
+
+### Excluir o ingrediente Cacau em Pó (ID 3)
+### ATENÇÃO: Se ele estiver atrelado à receita, o banco bloqueará a exclusão para evitar dados órfãos.
+DELETE http://localhost:8080/api/ingredients/3
+Authorization: Bearer COLE_O_SEU_TOKEN_AQUI
+
+### Excluir a Receita do Brigadeiro (ID 1)
+DELETE http://localhost:8080/api/recipes/1
+Authorization: Bearer COLE_O_SEU_TOKEN_AQUI
 
 
-
-
-
-
-
-
-
-
-
-
-
+### Calcular Preço Sugerido de Venda (ID 1 com 150% de margem)
+GET http://localhost:8080/api/recipes/1/pricing?margin=150
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJtYXJpb0B0ZXN0ZS5jb20iLCJpYXQiOjE3ODkwNjQ3MzAsImV4cCI6MTc4OTE1MTEzMH0.mupPyxJa_HaUCbOuOc5j2bhY_bDsAApnTPKxtNtuDrRqAo1PhAKdLgW6RGpvZGBvARTjgpH1ohCcW7X_ZClTwQ
 
 
 
