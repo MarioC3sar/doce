@@ -1,0 +1,106 @@
+
+### Cadastrar Usuário
+POST http://localhost:8080/auth/register
+Content-Type: application/json
+
+{
+  "name": "Mario Alves",
+  "email": "mario@teste.com",
+  "password": "123",
+  "role": "ROLE_ADMIN"
+}
+
+### Fazer Login
+POST http://localhost:8080/auth/login
+Content-Type: application/json
+
+{
+  "email": "mario@teste.com",
+  "password": "123"
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

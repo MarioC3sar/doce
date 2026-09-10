@@ -1,0 +1,18 @@
+spring:
+  datasource:
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5438/precificacao_db}
+    username: ${DATABASE_USER:admin}
+    password: ${DATABASE_PASSWORD:secretpassword}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+
+jwt:
+  secret: ${JWT_SECRET:9a8f7b6c5d4e3f2a1b0c9d8e7f6a5b4c3d2e1f0a9b8c7d6e5f4a3b2c1d0e9f8a}
+  expiration: 86400000 # 24 horas em milissegundos

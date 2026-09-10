@@ -1,0 +1,7 @@
+/home/mario/Downloads/doce/src/main/java/com/example/demo/DemoApplication.java
+/home/mario/Downloads/doce/src/main/java/com/example/demo/model/Role.java
+/home/mario/Downloads/doce/src/main/java/com/example/demo/model/User.java
+/home/mario/Downloads/doce/src/main/java/com/example/demo/repository/UserRepository.java
+/home/mario/Downloads/doce/src/main/java/com/example/demo/security/JwtAuthFilter.java
+/home/mario/Downloads/doce/src/main/java/com/example/demo/security/JwtTokenProvider.java
+/home/mario/Downloads/doce/src/main/java/com/example/demo/security/SecurityConfig.java
