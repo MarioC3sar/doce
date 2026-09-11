@@ -7,9 +7,9 @@
       container_name: precificacao_db
       restart: always
       environment:
-        POSTGRES_USER: admin
-        POSTGRES_PASSWORD: secretpassword
-        POSTGRES_DB: precificacao_db
+        POSTGRES_USER: ${PG_USER}
+        POSTGRES_PASSWORD: ${PG_PASSWORD}
+        POSTGRES_DB: ${PG_DB}
       ports:
         - "5438:5432"
       volumes:

@@ -1,21 +1,12 @@
 import React, { useState } from 'react';
-import {
-    View,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    StyleSheet,
-    KeyboardAvoidingView,
-    Platform,
-    Alert
-} from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, KeyboardAvoidingView, Platform, ActivityIndicator } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
 import api from '../services/api';
 
-// AQUI ESTÁ O NAVIGATION:
 export default function LoginScreen({ navigation }: any) {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [loading, setLoading] = useState(false);
 
     const handleLogin = async () => {
         if (!email || !password) {
@@ -23,113 +14,141 @@ export default function LoginScreen({ navigation }: any) {
             return;
         }
 
+        setLoading(true);
         try {
+            // Rota exata que estava funcionando no seu código original
             const response = await api.post('/auth/login', {
                 email: email,
                 password: password
             });
 
-            // 1. Imprime a resposta real do backend no seu terminal do Expo
             console.log('Resposta do Servidor:', response.data);
 
-            // 2. Tenta capturar o token (ajustaremos isso com base no console.log)
+            // Tenta capturar o token da mesma forma que funcionou antes
             const token = response.data.token || response.data.accessToken || response.data.jwt;
 
-            // 3. Trava de segurança: se o token continuar vazio, ele avisa e para o processo
             if (!token) {
                 Alert.alert('Erro', 'Token não encontrado. Verifique o terminal.');
+                setLoading(false);
                 return;
             }
 
+            // Salva o token de forma segura
             await SecureStore.setItemAsync('userToken', String(token));
 
-
+            // Vai para a tela principal
             navigation.replace('MainTabs');
 
         } catch (error) {
             console.error(error);
             Alert.alert('Erro', 'Credenciais inválidas ou erro de conexão.');
+        } finally {
+            setLoading(false);
         }
     };
 
     return (
-        <KeyboardAvoidingView
-            style={styles.container}
-            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        >
-            <View style={styles.formContainer}>
-                <Text style={styles.title}>Precificação</Text>
-                <Text style={styles.subtitle}>Gerencie suas fichas técnicas</Text>
+        <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+            <View style={styles.content}>
 
-                <TextInput
-                    style={styles.input}
-                    placeholder="E-mail"
-                    keyboardType="email-address"
-                    autoCapitalize="none"
-                    value={email}
-                    onChangeText={setEmail}
-                />
+                {/* Cabeçalho de Boas-vindas */}
+                <View style={styles.header}>
+                    <Text style={styles.title}>Bem-vindo(a)! 🧁</Text>
+                    <Text style={styles.subtitle}>Gerencie sua confeitaria com amor, organização e precisão.</Text>
+                </View>
 
-                <TextInput
-                    style={styles.input}
-                    placeholder="Senha"
-                    secureTextEntry
-                    value={password}
-                    onChangeText={setPassword}
-                />
+                {/* Card do Formulário */}
+                <View style={styles.formCard}>
+                    <Text style={styles.label}>E-mail</Text>
+                    <TextInput
+                        style={styles.input}
+                        value={email}
+                        onChangeText={setEmail}
+                        placeholder="exemplo@confeitaria.com"
+                        placeholderTextColor="#A3958B"
+                        keyboardType="email-address"
+                        autoCapitalize="none"
+                    />
 
-                <TouchableOpacity style={styles.button} onPress={handleLogin}>
-                    <Text style={styles.buttonText}>Entrar</Text>
-                </TouchableOpacity>
+                    <Text style={styles.label}>Senha</Text>
+                    <TextInput
+                        style={styles.input}
+                        value={password}
+                        onChangeText={setPassword}
+                        placeholder="••••••••"
+                        placeholderTextColor="#A3958B"
+                        secureTextEntry
+                    />
+
+                    <TouchableOpacity style={styles.loginButton} onPress={handleLogin} disabled={loading}>
+                        {loading ? (
+                            <ActivityIndicator color="#FFF" />
+                        ) : (
+                            <Text style={styles.loginButtonText}>Entrar</Text>
+                        )}
+                    </TouchableOpacity>
+                </View>
+
+                {/* Rodapé */}
+                <Text style={styles.footerText}>Feito com ❤️ para negócios artesanais</Text>
+
             </View>
         </KeyboardAvoidingView>
     );
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#F5F5F5',
-    },
-    formContainer: {
-        flex: 1,
-        justifyContent: 'center',
-        paddingHorizontal: 30,
-    },
-    title: {
-        fontSize: 32,
-        fontWeight: 'bold',
-        color: '#333',
-        textAlign: 'center',
-        marginBottom: 8,
-    },
-    subtitle: {
-        fontSize: 16,
-        color: '#666',
-        textAlign: 'center',
-        marginBottom: 40,
-    },
-    input: {
+    container: { flex: 1, backgroundColor: '#FDFBF7' }, // Fundo baunilha
+    content: { flex: 1, justifyContent: 'center', padding: 24 },
+
+    // Textos do Cabeçalho
+    header: { alignItems: 'center', marginBottom: 40 },
+    title: { fontSize: 32, fontWeight: '900', color: '#5C4D43', marginBottom: 10, textAlign: 'center' },
+    subtitle: { fontSize: 16, color: '#8C7B70', textAlign: 'center', paddingHorizontal: 20, lineHeight: 24 },
+
+    // Card Flutuante
+    formCard: {
         backgroundColor: '#FFF',
-        height: 50,
-        borderRadius: 8,
-        paddingHorizontal: 16,
-        marginBottom: 16,
-        borderWidth: 1,
-        borderColor: '#E0E0E0',
-        fontSize: 16,
+        padding: 24,
+        borderRadius: 32,
+        elevation: 4,
+        shadowColor: '#D6A284',
+        shadowOpacity: 0.15,
+        shadowRadius: 15,
+        shadowOffset: { width: 0, height: 8 },
+        marginBottom: 30
     },
-    button: {
-        backgroundColor: '#4A90E2',
-        height: 50,
-        borderRadius: 8,
+
+    // Inputs
+    label: { fontSize: 14, color: '#8C7B70', marginBottom: 8, fontWeight: 'bold', marginLeft: 4 },
+    input: {
+        backgroundColor: '#FDFBF7',
+        height: 60,
+        borderRadius: 16,
+        paddingHorizontal: 16,
+        marginBottom: 20,
+        borderWidth: 1,
+        borderColor: '#F2E8DF',
+        color: '#5C4D43',
+        fontSize: 16
+    },
+
+    // Botão de Login
+    loginButton: {
+        backgroundColor: '#D6A284', // Caramelo
+        height: 60,
+        borderRadius: 20,
         justifyContent: 'center',
         alignItems: 'center',
-        marginTop: 8,
+        marginTop: 10,
+        elevation: 3,
+        shadowColor: '#D6A284',
+        shadowOpacity: 0.4,
+        shadowRadius: 8,
+        shadowOffset: { width: 0, height: 4 }
     },
-    buttonText: {
-        color: '#FFF',
-        fontSize: 18,
-        fontWeight: 'bold',
-    },
+    loginButtonText: { color: '#FFF', fontSize: 18, fontWeight: 'bold' },
+
+    // Rodapé
+    footerText: { textAlign: 'center', color: '#A3958B', fontSize: 14, fontWeight: '600' }
 });

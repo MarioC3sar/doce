@@ -1,119 +1,118 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, FlatList, ActivityIndicator, Alert } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, ScrollView, ActivityIndicator, Alert } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
 import api from '../services/api';
 
-interface RecipeItem {
-    id: number;
-    ingredient: {
-        name: string;
-        unit: string;
-    };
-    quantityUsed: number;
-    calculatedCost: number; // ou o nome que seu backend dá para o custo desse item
-}
-
-interface RecipeDetail {
-    id: number;
-    name: string;
-    yield: number;
-    totalCost: number;
-    items: RecipeItem[];
-}
-
 export default function RecipeDetailScreen({ route }: any) {
-    const { recipeId } = route.params; // Recebe o ID da tela anterior
-    const [recipe, setRecipe] = useState<RecipeDetail | null>(null);
+    const { recipeId } = route.params;
+    const [recipe, setRecipe] = useState<any>(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        fetchRecipeDetails();
-    }, []);
-
-    const fetchRecipeDetails = async () => {
-        try {
-            const token = await SecureStore.getItemAsync('userToken');
-            // Busca os detalhes de UMA receita específica pelo ID
-            const response = await api.get(`/api/recipes/${recipeId}`, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
-            setRecipe(response.data);
-        } catch (error) {
-            console.error(error);
-            Alert.alert('Erro', 'Não foi possível carregar os detalhes da receita.');
-        } finally {
-            setLoading(false);
-        }
-    };
+        const fetchRecipe = async () => {
+            try {
+                const token = await SecureStore.getItemAsync('userToken');
+                const response = await api.get(`/api/recipes/${recipeId}`, {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+                setRecipe(response.data);
+            } catch (error) {
+                Alert.alert('Erro', 'Não foi possível carregar a ficha técnica.');
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchRecipe();
+    }, [recipeId]);
 
     if (loading) {
-        return <ActivityIndicator size="large" color="#4A90E2" style={{ marginTop: 50 }} />;
-    }
-
-    if (!recipe) {
         return (
-            <View style={styles.container}>
-                <Text style={styles.emptyText}>Receita não encontrada.</Text>
+            <View style={[styles.container, { justifyContent: 'center' }]}>
+                <ActivityIndicator size="large" color="#D6A284" />
             </View>
         );
     }
 
-    const unitCost = recipe.yield > 0 ? (recipe.totalCost / recipe.yield) : 0;
+    if (!recipe) return null;
 
-    const renderItem = ({ item }: { item: RecipeItem }) => (
-        <View style={styles.itemCard}>
-            <Text style={styles.itemName}>{item.ingredient.name}</Text>
-            <View style={styles.itemRow}>
-                <Text style={styles.itemText}>
-                    Usado: {item.quantityUsed} {item.ingredient.unit}
-                </Text>
-                {/* Se o seu backend chamar o custo do item de outro nome, ajuste o "calculatedCost" abaixo */}
-                <Text style={styles.itemCost}>R$ {item.calculatedCost ? item.calculatedCost.toFixed(2) : '0.00'}</Text>
-            </View>
-        </View>
-    );
+    const unitCost = recipe.yield > 0 ? recipe.totalCost / recipe.yield : 0;
 
     return (
-        <View style={styles.container}>
-            {/* Cabeçalho da Receita */}
+        <ScrollView style={styles.container} contentContainerStyle={styles.scrollContent}>
+
             <View style={styles.headerCard}>
-                <Text style={styles.headerTitle}>{recipe.name}</Text>
-                <View style={styles.headerRow}>
-                    <Text style={styles.headerText}>Rendimento: {recipe.yield} un.</Text>
-                    <Text style={styles.headerText}>Custo Total: R$ {recipe.totalCost.toFixed(2)}</Text>
-                </View>
-                <View style={styles.headerRow}>
-                    <Text style={styles.unitCostText}>Custo por Unidade: R$ {unitCost.toFixed(4)}</Text>
+                <Text style={styles.recipeName}>{recipe.name}</Text>
+
+                <View style={styles.metricsGrid}>
+                    <View style={styles.metricBox}>
+                        <Text style={styles.metricLabel}>Custo da Panela</Text>
+                        <Text style={styles.metricValueDanger}>R$ {recipe.totalCost.toFixed(2)}</Text>
+                    </View>
+                    <View style={styles.metricBox}>
+                        <Text style={styles.metricLabel}>Rendimento</Text>
+                        <Text style={styles.metricValueNeutral}>{recipe.yield} un</Text>
+                    </View>
+                    <View style={styles.metricBox}>
+                        <Text style={styles.metricLabel}>Custo Unitário</Text>
+                        <Text style={styles.metricValueSuccess}>R$ {unitCost.toFixed(2)}</Text>
+                    </View>
                 </View>
             </View>
 
             <Text style={styles.sectionTitle}>Insumos Utilizados</Text>
 
-            {/* Lista de Insumos */}
-            <FlatList
-                data={recipe.items}
-                keyExtractor={(item) => String(item.id)}
-                renderItem={renderItem}
-                contentContainerStyle={styles.listContainer}
-                ListEmptyComponent={<Text style={styles.emptyText}>Nenhum insumo encontrado nesta receita.</Text>}
-            />
-        </View>
+            <View style={styles.ingredientsCard}>
+                {recipe.ingredients && recipe.ingredients.length > 0 ? (
+                    recipe.ingredients.map((item: any, index: number) => {
+                        const ing = item.ingredient;
+                        // Proteção extra caso o insumo original tenha sido apagado do banco
+                        if (!ing) return null;
+
+                        const itemCost = ing.unitCost * item.quantityUsed;
+                        return (
+                            <View key={index} style={styles.ingredientRow}>
+                                <View style={styles.ingredientInfo}>
+                                    <Text style={styles.ingredientName}>{ing.name}</Text>
+                                    <Text style={styles.ingredientQtd}>
+                                        Usado: {item.quantityUsed} {ing.unit}
+                                    </Text>
+                                </View>
+                                <Text style={styles.ingredientCost}>R$ {itemCost.toFixed(2)}</Text>
+                            </View>
+                        );
+                    })
+                ) : (
+                    <Text style={styles.emptyText}>Nenhum insumo registrado nesta ficha.</Text>
+                )}
+            </View>
+
+        </ScrollView>
     );
 }
 
 const styles = StyleSheet.create({
-    container: { flex: 1, backgroundColor: '#F5F5F5' },
-    listContainer: { padding: 16, paddingBottom: 40 },
-    headerCard: { backgroundColor: '#4A90E2', padding: 20, borderBottomLeftRadius: 16, borderBottomRightRadius: 16, marginBottom: 16, elevation: 3 },
-    headerTitle: { fontSize: 24, fontWeight: 'bold', color: '#FFF', marginBottom: 12 },
-    headerRow: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 4 },
-    headerText: { fontSize: 16, color: '#FFF' },
-    unitCostText: { fontSize: 18, fontWeight: 'bold', color: '#FFF', marginTop: 8 },
-    sectionTitle: { fontSize: 18, fontWeight: 'bold', color: '#333', marginLeft: 16, marginBottom: 8 },
-    itemCard: { backgroundColor: '#FFF', padding: 16, borderRadius: 8, marginBottom: 8, borderWidth: 1, borderColor: '#E0E0E0' },
-    itemName: { fontSize: 16, fontWeight: 'bold', color: '#333', marginBottom: 4 },
-    itemRow: { flexDirection: 'row', justifyContent: 'space-between' },
-    itemText: { fontSize: 14, color: '#666' },
-    itemCost: { fontSize: 14, fontWeight: 'bold', color: '#E67E22' }, // Laranja para o custo do item
-    emptyText: { textAlign: 'center', color: '#999', marginTop: 20, fontSize: 16 },
+    container: { flex: 1, backgroundColor: '#FDFBF7' },
+    scrollContent: { padding: 16, paddingBottom: 40 },
+
+    // Cabeçalho / Resumo
+    headerCard: { backgroundColor: '#FFF', padding: 20, borderRadius: 24, marginBottom: 24, elevation: 2, shadowColor: '#D6A284', shadowOpacity: 0.1, shadowRadius: 10, shadowOffset: { width: 0, height: 4 } },
+    recipeName: { fontSize: 24, fontWeight: '900', color: '#5C4D43', marginBottom: 20, textAlign: 'center' },
+
+    metricsGrid: { flexDirection: 'row', justifyContent: 'space-between', gap: 10 },
+    metricBox: { flex: 1, backgroundColor: '#FDFBF7', padding: 12, borderRadius: 16, alignItems: 'center', borderWidth: 1, borderColor: '#F2E8DF' },
+    metricLabel: { fontSize: 11, color: '#A3958B', fontWeight: 'bold', marginBottom: 4, textAlign: 'center' },
+    metricValueDanger: { fontSize: 15, fontWeight: '900', color: '#D67D6B' },
+    metricValueNeutral: { fontSize: 15, fontWeight: '900', color: '#8C7B70' },
+    metricValueSuccess: { fontSize: 15, fontWeight: '900', color: '#8CA680' },
+
+    // Lista de Insumos
+    sectionTitle: { fontSize: 18, fontWeight: '900', color: '#5C4D43', marginBottom: 12, marginLeft: 4 },
+    ingredientsCard: { backgroundColor: '#FFF', padding: 20, borderRadius: 24, elevation: 1, shadowColor: '#D6A284', shadowOpacity: 0.05, shadowRadius: 5, shadowOffset: { width: 0, height: 2 } },
+
+    ingredientRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: '#F2E8DF' },
+    ingredientInfo: { flex: 1 },
+    ingredientName: { fontSize: 16, fontWeight: 'bold', color: '#5C4D43', marginBottom: 4 },
+    ingredientQtd: { fontSize: 13, color: '#A3958B' },
+    ingredientCost: { fontSize: 16, fontWeight: 'bold', color: '#D6A284' },
+    emptyText: { textAlign: 'center', color: '#A3958B', fontStyle: 'italic', paddingVertical: 10 }
 });

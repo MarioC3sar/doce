@@ -41,7 +41,7 @@ Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJtYXJpb0B0ZXN0ZS5jb20iLCJpY
 ### 1. Cadastrar Leite Condensado (Deve gerar ID 2)
 POST http://localhost:8080/api/ingredients
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJtYXJpb0B0ZXN0ZS5jb20iLCJpYXQiOjE3ODkwNjMzOTMsImV4cCI6MTc4OTE0OTc5M30.HpyDcoxNSois9wp_rViXBGZ2FYvWg9XVqp57NrQJDIHd3cAg6BIjvzbVuN7fGfit93VnBgxbtRVYJ7EUR77zRg
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJtYXJpb0B0ZXN0ZS5jb20iLCJpYXQiOjE3ODkwODA0MzksImV4cCI6MTc4OTE2NjgzOX0.L5UNflY0bTGGO7ThISPFzpXuVPjmQdqYGm5m8wTXoJg1AfXFH9PWcwh_iLE01eoqcZJQlOEEM3ht-zq9mbGR9A
 
 {
   "name": "Leite Condensado Moça",
@@ -53,7 +53,7 @@ Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJtYXJpb0B0ZXN0ZS5jb20iLCJpY
 ### 2. Cadastrar Cacau em Pó 70% (Deve gerar ID 3)
 POST http://localhost:8080/api/ingredients
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJtYXJpb0B0ZXN0ZS5jb20iLCJpYXQiOjE3ODkwNjMzOTMsImV4cCI6MTc4OTE0OTc5M30.HpyDcoxNSois9wp_rViXBGZ2FYvWg9XVqp57NrQJDIHd3cAg6BIjvzbVuN7fGfit93VnBgxbtRVYJ7EUR77zRg
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJtYXJpb0B0ZXN0ZS5jb20iLCJpYXQiOjE3ODkwODA0MzksImV4cCI6MTc4OTE2NjgzOX0.L5UNflY0bTGGO7ThISPFzpXuVPjmQdqYGm5m8wTXoJg1AfXFH9PWcwh_iLE01eoqcZJQlOEEM3ht-zq9mbGR9A
 
 {
   "name": "Cacau em Pó 70%",
@@ -65,7 +65,7 @@ Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJtYXJpb0B0ZXN0ZS5jb20iLCJpY
 ### 3. Criar a Ficha Técnica do Brigadeiro
 POST http://localhost:8080/api/recipes
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJtYXJpb0B0ZXN0ZS5jb20iLCJpYXQiOjE3ODkwNjMzOTMsImV4cCI6MTc4OTE0OTc5M30.HpyDcoxNSois9wp_rViXBGZ2FYvWg9XVqp57NrQJDIHd3cAg6BIjvzbVuN7fGfit93VnBgxbtRVYJ7EUR77zRg
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJtYXJpb0B0ZXN0ZS5jb20iLCJpYXQiOjE3ODkwODA0MzksImV4cCI6MTc4OTE2NjgzOX0.L5UNflY0bTGGO7ThISPFzpXuVPjmQdqYGm5m8wTXoJg1AfXFH9PWcwh_iLE01eoqcZJQlOEEM3ht-zq9mbGR9A
 
 
 {
@@ -85,7 +85,7 @@ Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJtYXJpb0B0ZXN0ZS5jb20iLCJpY
 
 ### Listar Receitas (Fichas Técnicas)
 GET http://localhost:8080/api/recipes
-Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJtYXJpb0B0ZXN0ZS5jb20iLCJpYXQiOjE3ODkwNjMzOTMsImV4cCI6MTc4OTE0OTc5M30.HpyDcoxNSois9wp_rViXBGZ2FYvWg9XVqp57NrQJDIHd3cAg6BIjvzbVuN7fGfit93VnBgxbtRVYJ7EUR77zRg
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJtYXJpb0B0ZXN0ZS5jb20iLCJpYXQiOjE3ODkwODA0MzksImV4cCI6MTc4OTE2NjgzOX0.L5UNflY0bTGGO7ThISPFzpXuVPjmQdqYGm5m8wTXoJg1AfXFH9PWcwh_iLE01eoqcZJQlOEEM3ht-zq9mbGR9A
 
 
 
@@ -105,7 +105,7 @@ Authorization: Bearer COLE_O_SEU_TOKEN_AQUI
 ### Atualizar a Receita do Brigadeiro (ID 1) - Alterando o rendimento para 40
 PUT http://localhost:8080/api/recipes/1
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJtYXJpb0B0ZXN0ZS5jb20iLCJpYXQiOjE3ODkwNjQwNDMsImV4cCI6MTc4OTE1MDQ0M30.lqbu5rO_vo8A5Kuy6KeIp4MwPO6vfXBdsjBSp0zSJlz6zrZ7x-2NMeoxTtPFAE9tqp2FER6YFS4u77BP_TTklA
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJtYXJpb0B0ZXN0ZS5jb20iLCJpYXQiOjE3ODkwODA0MzksImV4cCI6MTc4OTE2NjgzOX0.L5UNflY0bTGGO7ThISPFzpXuVPjmQdqYGm5m8wTXoJg1AfXFH9PWcwh_iLE01eoqcZJQlOEEM3ht-zq9mbGR9A
 
 {
   "name": "Massa de Brigadeiro 70% Cacau",
@@ -142,12 +142,50 @@ Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJtYXJpb0B0ZXN0ZS5jb20iLCJpY
 
 
 
+###
+POST http://localhost:8080/api/products
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJtYXJpb0B0ZXN0ZS5jb20iLCJpYXQiOjE3ODkwODA0MzksImV4cCI6MTc4OTE2NjgzOX0.L5UNflY0bTGGO7ThISPFzpXuVPjmQdqYGm5m8wTXoJg1AfXFH9PWcwh_iLE01eoqcZJQlOEEM3ht-zq9mbGR9A
 
 
+{
+  "name": "Caixa com 6 Doces Variados",
+  "salePrice": 35.00,
+  "recipes": [
+    {
+      "recipe": { "id": 1 },
+      "quantity": 3
+    }
+
+  ],
+  "ingredients": [
+    {
+      "ingredient": { "id": 2 },
+      "quantityUsed": 1
+    }
+  ]
+}
 
 
+###
+POST http://localhost:8080/auth/register
+Content-Type: application/json
 
+{
+  "name": "Thallia",
+  "email": "thallia@teste.com",
+  "password": "123",
+  "role": "ROLE_ADMIN"
+}
 
+### Fazer Login
+POST http://localhost:8080/auth/login
+Content-Type: application/json
+
+{
+  "email": "thallia@teste.com",
+  "password": "123"
+}
 
 
 

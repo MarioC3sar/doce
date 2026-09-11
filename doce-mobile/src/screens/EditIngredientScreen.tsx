@@ -1,75 +1,184 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, KeyboardAvoidingView, Platform } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ScrollView, ActivityIndicator } from 'react-native';
+import { Picker } from '@react-native-picker/picker';
 import * as SecureStore from 'expo-secure-store';
 import api from '../services/api';
 
 export default function EditIngredientScreen({ route, navigation }: any) {
-    // Recebe o ingrediente selecionado da tela anterior
-    const { ingredient } = route.params;
+    const { ingredientId } = route.params;
 
-    // Inicia os estados com os dados atuais
-    const [name, setName] = useState(ingredient.name);
-    const [price, setPrice] = useState(String(ingredient.packagePrice));
-    const [quantity, setQuantity] = useState(String(ingredient.packageQuantity));
-    const [unit, setUnit] = useState(ingredient.unit);
+    const [name, setName] = useState('');
+    const [packagePrice, setPackagePrice] = useState('');
+    const [packageQuantity, setPackageQuantity] = useState('');
+    const [unit, setUnit] = useState('g');
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        loadIngredient();
+    }, []);
+
+    const loadIngredient = async () => {
+        try {
+            const token = await SecureStore.getItemAsync('userToken');
+            const response = await api.get(`/api/ingredients/${ingredientId}`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+
+            const ing = response.data;
+            setName(ing.name);
+            setPackagePrice(String(ing.packagePrice));
+            setPackageQuantity(String(ing.packageQuantity));
+            setUnit(ing.unit);
+        } catch (error) {
+            console.error(error);
+            Alert.alert('Erro', 'Falha ao carregar insumo.');
+            navigation.goBack();
+        } finally {
+            setLoading(false);
+        }
+    };
 
     const handleUpdate = async () => {
-        if (!name || !price || !quantity || !unit) {
-            Alert.alert('Atenção', 'Preencha todos os campos.');
+        if (!name || !packagePrice || !packageQuantity) {
+            Alert.alert('Erro', 'Por favor, preencha todos os campos.');
             return;
         }
 
         try {
             const token = await SecureStore.getItemAsync('userToken');
-            const formattedPrice = parseFloat(price.replace(',', '.'));
-            const formattedQuantity = parseFloat(quantity.replace(',', '.'));
+            const payload = {
+                name,
+                packagePrice: parseFloat(packagePrice.replace(',', '.')),
+                packageQuantity: parseFloat(packageQuantity.replace(',', '.')),
+                unit
+            };
 
-            await api.put(`/api/ingredients/${ingredient.id}`, {
-                name: name,
-                packagePrice: formattedPrice,
-                packageQuantity: formattedQuantity,
-                unit: unit.toUpperCase()
-            }, {
+            await api.put(`/api/ingredients/${ingredientId}`, payload, {
                 headers: { Authorization: `Bearer ${token}` }
             });
 
-            Alert.alert('Sucesso', 'Insumo atualizado com sucesso!');
+            Alert.alert('Sucesso', 'Insumo atualizado!');
             navigation.goBack();
-
         } catch (error) {
             console.error(error);
-            Alert.alert('Erro', 'Não foi possível atualizar o insumo.');
+            Alert.alert('Erro', 'Falha ao atualizar o insumo.');
         }
     };
 
+    if (loading) {
+        return (
+            <View style={[styles.container, { justifyContent: 'center' }]}>
+                <ActivityIndicator size="large" color="#D6A284" />
+            </View>
+        );
+    }
+
     return (
-        <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
-            <View style={styles.form}>
+        <ScrollView contentContainerStyle={styles.container}>
+            <View style={styles.formCard}>
                 <Text style={styles.label}>Nome do Insumo</Text>
-                <TextInput style={styles.input} value={name} onChangeText={setName} />
+                <TextInput
+                    style={styles.input}
+                    value={name}
+                    onChangeText={setName}
+                    placeholderTextColor="#A3958B"
+                    placeholder="Ex: Leite Condensado"
+                />
 
-                <Text style={styles.label}>Preço da Embalagem (R$)</Text>
-                <TextInput style={styles.input} keyboardType="numeric" value={price} onChangeText={setPrice} />
+                <Text style={styles.label}>Preço do Pacote Fechado (R$)</Text>
+                <TextInput
+                    style={styles.input}
+                    keyboardType="numeric"
+                    value={packagePrice}
+                    onChangeText={setPackagePrice}
+                    placeholderTextColor="#A3958B"
+                    placeholder="Ex: 6.50"
+                />
 
-                <Text style={styles.label}>Quantidade na Embalagem</Text>
-                <TextInput style={styles.input} keyboardType="numeric" value={quantity} onChangeText={setQuantity} />
+                <Text style={styles.label}>Peso/Quantidade do Pacote</Text>
+                <View style={styles.row}>
+                    <TextInput
+                        style={[styles.input, { flex: 1, marginBottom: 0 }]}
+                        keyboardType="numeric"
+                        value={packageQuantity}
+                        onChangeText={setPackageQuantity}
+                        placeholderTextColor="#A3958B"
+                        placeholder="Ex: 395"
+                    />
+                    <View style={styles.pickerWrapper}>
+                        <Picker
+                            selectedValue={unit}
+                            style={styles.pickerStyle}
+                            onValueChange={(itemValue) => setUnit(itemValue)}
+                        >
+                            <Picker.Item label="Gramas (g)" value="g" color="#5C4D43" />
+                            <Picker.Item label="Quilos (kg)" value="kg" color="#5C4D43" />
+                            <Picker.Item label="Mililitros (ml)" value="ml" color="#5C4D43" />
+                            <Picker.Item label="Litros (l)" value="l" color="#5C4D43" />
+                            <Picker.Item label="Unidades (un)" value="un" color="#5C4D43" />
+                        </Picker>
+                    </View>
+                </View>
 
-                <Text style={styles.label}>Unidade (G, KG, ML, L, UN)</Text>
-                <TextInput style={styles.input} autoCapitalize="characters" maxLength={2} value={unit} onChangeText={setUnit} />
-
-                <TouchableOpacity style={styles.button} onPress={handleUpdate}>
-                    <Text style={styles.buttonText}>Atualizar Insumo</Text>
+                <TouchableOpacity style={styles.saveButton} onPress={handleUpdate}>
+                    <Text style={styles.saveButtonText}>Atualizar Insumo</Text>
                 </TouchableOpacity>
             </View>
-        </KeyboardAvoidingView>
+        </ScrollView>
     );
 }
 
 const styles = StyleSheet.create({
-    container: { flex: 1, backgroundColor: '#F5F5F5' },
-    form: { padding: 20 },
-    label: { fontSize: 16, color: '#333', marginBottom: 5, fontWeight: 'bold' },
-    input: { backgroundColor: '#FFF', height: 50, borderRadius: 8, paddingHorizontal: 16, marginBottom: 16, borderWidth: 1, borderColor: '#E0E0E0', fontSize: 16 },
-    button: { backgroundColor: '#4A90E2', height: 50, borderRadius: 8, justifyContent: 'center', alignItems: 'center', marginTop: 10 },
-    buttonText: { color: '#FFF', fontSize: 18, fontWeight: 'bold' },
+    container: { flexGrow: 1, backgroundColor: '#FDFBF7', padding: 16 },
+
+    formCard: {
+        backgroundColor: '#FFF',
+        padding: 24,
+        borderRadius: 24,
+        elevation: 2,
+        shadowColor: '#D6A284',
+        shadowOpacity: 0.1,
+        shadowRadius: 10,
+        shadowOffset: { width: 0, height: 4 },
+        marginBottom: 20
+    },
+
+    label: { fontSize: 14, color: '#8C7B70', marginBottom: 8, fontWeight: 'bold', marginLeft: 4 },
+    input: {
+        backgroundColor: '#FDFBF7',
+        height: 55,
+        borderRadius: 16,
+        paddingHorizontal: 16,
+        marginBottom: 20,
+        borderWidth: 1,
+        borderColor: '#F2E8DF',
+        color: '#5C4D43',
+        fontSize: 16
+    },
+
+    row: { flexDirection: 'row', gap: 10, marginBottom: 20 },
+    pickerWrapper: {
+        flex: 1,
+        backgroundColor: '#FDFBF7',
+        borderWidth: 1,
+        borderColor: '#F2E8DF',
+        borderRadius: 16,
+        justifyContent: 'center'
+    },
+    pickerStyle: { color: '#5C4D43' },
+
+    saveButton: {
+        backgroundColor: '#D6A284',
+        height: 60,
+        borderRadius: 20,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginTop: 10,
+        elevation: 3,
+        shadowColor: '#D6A284',
+        shadowOpacity: 0.3,
+        shadowRadius: 6,
+        shadowOffset: { width: 0, height: 3 }
+    },
+    saveButtonText: { color: '#FFF', fontSize: 18, fontWeight: 'bold' }
 });

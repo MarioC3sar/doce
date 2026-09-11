@@ -1,5 +1,3 @@
-./docker-compose.yml
-./application.yml
-./teste.html
+
 .env
-./teste.http
+teste.http
