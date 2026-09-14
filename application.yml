@@ -1,14 +1,21 @@
-# A porta do servidor será definida pelo Render. Se não tiver, usa a 8080.
-server.port=${PORT:8080}
+server:
+  port: ${PORT:8080}
 
-# Configurações do Banco de Dados usando Variáveis de Ambiente
-spring.datasource.url=${DATABASE_URL}
-spring.datasource.username=${DATABASE_USER}
-spring.datasource.password=${DATABASE_PASSWORD}
+spring:
+  datasource:
+    url: ${DATABASE_URL}
+    username: ${DATABASE_USER}
+    password: ${DATABASE_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
 
-# Atualizar o banco automaticamente (Mantenha o update)
-spring.jpa.hibernate.ddl-auto=update
-spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
-
-# Se você tiver uma chave secreta do JWT, coloque aqui também:
-api.security.token.secret=${JWT_SECRET:minha-chave-secreta-local}
+jwt:
+  secret: ${JWT_SECRET}
+  expiration: 86400000
