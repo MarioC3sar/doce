@@ -3,9 +3,11 @@ server:
 
 spring:
   datasource:
-    url: ${DATABASE_URL}
-    username: ${DATABASE_USER}
-    password: ${DATABASE_PASSWORD}
+    # No Render, configure DB_URL, DB_USER e DB_PASSWORD nas variáveis de ambiente.
+    # Os nomes DATABASE_* permanecem como alternativa para compatibilidade.
+    url: ${DB_URL:${DATABASE_URL:}}
+    username: ${DB_USER:${DATABASE_USER:}}
+    password: ${DB_PASSWORD:${DATABASE_PASSWORD:}}
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
@@ -17,6 +19,5 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
 
 jwt:
-  jwt:
-    secret: ${JWT_SECRET:chave-padrao-apenas-para-dev-local-segura-123456}
-    expiration: 86400000
+  secret: ${JWT_SECRET}
+  expiration: 86400000
