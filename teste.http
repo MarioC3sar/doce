@@ -147,7 +147,7 @@ POST http://localhost:8080/api/products
 Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJtYXJpb0B0ZXN0ZS5jb20iLCJpYXQiOjE3ODkwODA0MzksImV4cCI6MTc4OTE2NjgzOX0.L5UNflY0bTGGO7ThISPFzpXuVPjmQdqYGm5m8wTXoJg1AfXFH9PWcwh_iLE01eoqcZJQlOEEM3ht-zq9mbGR9A
 
-
+ssss
 {
   "name": "Caixa com 6 Doces Variados",
   "salePrice": 35.00,
