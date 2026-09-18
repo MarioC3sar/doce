@@ -17,5 +17,6 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
 
 jwt:
-  secret: ${JWT_SECRET}
-  expiration: 86400001
+  jwt:
+    secret: ${JWT_SECRET:chave-padrao-apenas-para-dev-local-segura-123456}
+    expiration: 86400000

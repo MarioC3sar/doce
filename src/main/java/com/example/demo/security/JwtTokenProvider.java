@@ -14,11 +14,11 @@ import java.util.Date;
 @Component
 public class JwtTokenProvider {
 
-    @Value("${JWT_SECRET}")
-    private String jwtSecret;
+    @Value("${jwt.secret}")
+private String jwtSecret;
 
-    @Value("${JWT_EXPIRATION}")
-    private long jwtExpirationDate;
+@Value("${jwt.expiration:86400000}")
+private long jwtExpirationDate;
 
     // Gera a chave criptográfica com base no secret do application.yml
     private SecretKey key() {
