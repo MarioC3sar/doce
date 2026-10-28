@@ -4,7 +4,9 @@ import com.example.demo.model.*;
 import com.example.demo.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -40,6 +42,9 @@ public class OrderController {
         // Valida se o cliente existe
         Client client = clientRepository.findById(order.getClient().getId())
                 .orElseThrow(() -> new RuntimeException("Cliente não encontrado!"));
+        if (!client.isActive()) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Não é possível criar pedidos para um cliente inativo.");
+        }
         order.setClient(client);
 
         if (order.getItems() != null) {

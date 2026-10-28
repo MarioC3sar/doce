@@ -14,6 +14,9 @@ public class Client {
     private String phone;
     private String address;
 
+    @Column(nullable = false, columnDefinition = "boolean default true")
+    private boolean active = true;
+
     // Getters e Setters
     public Long getId() {
         return id;
@@ -45,5 +48,13 @@ public class Client {
 
     public void setAddress(String address) {
         this.address = address;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
     }
 }

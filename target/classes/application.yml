@@ -1,0 +1,23 @@
+server:
+  port: ${PORT:8080}
+
+spring:
+  datasource:
+    # No Render, configure DB_URL, DB_USER e DB_PASSWORD nas variáveis de ambiente.
+    # Os nomes DATABASE_* permanecem como alternativa para compatibilidade.
+    url: ${DB_URL:${DATABASE_URL:}}
+    username: ${DB_USER:${DATABASE_USER:}}
+    password: ${DB_PASSWORD:${DATABASE_PASSWORD:}}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+jwt:
+  secret: ${JWT_SECRET}
+  expiration: 86400000

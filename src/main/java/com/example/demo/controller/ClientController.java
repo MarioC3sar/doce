@@ -16,8 +16,8 @@ public class ClientController {
     private ClientRepository clientRepository;
 
     @GetMapping
-    public List<Client> getAllClients() {
-        return clientRepository.findAll();
+    public List<Client> getAllClients(@RequestParam(defaultValue = "false") boolean includeInactive) {
+        return includeInactive ? clientRepository.findAll() : clientRepository.findByActiveTrueOrderByNameAsc();
     }
 
     @GetMapping("/{id}")
@@ -43,10 +43,20 @@ public class ClientController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteClient(@PathVariable Long id) {
-        if (clientRepository.existsById(id)) {
-            clientRepository.deleteById(id);
-            return ResponseEntity.noContent().build();
-        }
-        return ResponseEntity.notFound().build();
+        return clientRepository.findById(id).map(client -> {
+            client.setActive(false);
+            clientRepository.save(client);
+            return ResponseEntity.noContent().<Void>build();
+        }).orElse(ResponseEntity.notFound().build());
+    }
+
+    @PatchMapping("/{id}/active")
+    public ResponseEntity<Client> setClientActive(
+            @PathVariable Long id,
+            @RequestParam boolean active) {
+        return clientRepository.findById(id).map(client -> {
+            client.setActive(active);
+            return ResponseEntity.ok(clientRepository.save(client));
+        }).orElse(ResponseEntity.notFound().build());
     }
 }
