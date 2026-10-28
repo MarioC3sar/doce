@@ -444,6 +444,7 @@ class IngredientForm extends StatefulWidget {
 }
 
 class _IngredientFormState extends State<IngredientForm> {
+  static const _units = ['g', 'kg', 'ml', 'l', 'un'];
   late final name = TextEditingController(text: widget.item?.name),
       price = TextEditingController(text: widget.item?.packagePrice.toString()),
       qty = TextEditingController(
@@ -454,7 +455,13 @@ class _IngredientFormState extends State<IngredientForm> {
   @override
   void initState() {
     super.initState();
-    unit = widget.item?.unit ?? 'g';
+    final storedUnit = widget.item?.unit.trim();
+    if (storedUnit != null && storedUnit.isNotEmpty) {
+      final canonical = _units.where(
+        (candidate) => candidate.toLowerCase() == storedUnit.toLowerCase(),
+      );
+      unit = canonical.isEmpty ? storedUnit : canonical.first;
+    }
   }
 
   @override
@@ -507,13 +514,9 @@ class _IngredientFormState extends State<IngredientForm> {
         value: unit,
         decoration: const InputDecoration(labelText: 'Unidade'),
         items:
-            const [
-              'g',
-              'kg',
-              'ml',
-              'l',
-              'un',
-            ].map((x) => DropdownMenuItem(value: x, child: Text(x))).toList(),
+            [..._units, if (!_units.contains(unit)) unit]
+                .map((x) => DropdownMenuItem(value: x, child: Text(x)))
+                .toList(),
         onChanged: (x) => setState(() => unit = x ?? 'g'),
       ),
     ],

@@ -41,14 +41,14 @@ class ApiService {
       'Accept': 'application/json',
       'Content-Type': 'application/json',
     };
-    if (authenticated) {
-      final token = await readToken();
-      if (token == null || token.isEmpty) {
-        throw const ApiException('Sessão expirada. Entre novamente.');
-      }
-      headers['Authorization'] = 'Bearer $token';
-    }
     try {
+      if (authenticated) {
+        final token = await readToken().timeout(const Duration(seconds: 20));
+        if (token == null || token.isEmpty) {
+          throw const ApiException('Sessão expirada. Entre novamente.');
+        }
+        headers['Authorization'] = 'Bearer $token';
+      }
       final request = http.Request(method, uri)..headers.addAll(headers);
       if (body != null) request.body = jsonEncode(body);
       final streamed = await _client
